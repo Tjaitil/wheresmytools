@@ -1,0 +1,55 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# .NET
+bin/
+obj/
+out/
+TestResults/
+.vs/
+Api/wwwroot/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET secrets / local settings
+**/appsettings.*.local.json
+secrets.json
+
+# React / Node / Vite
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.eslintcache
+*.tsbuildinfo
+vite.svg
+
+# Environment files (keep examples)
+.env
+.env.*
+!.env.example
+
+# Misc
+*.tmp
+*.temp
+
+Sqlite
+*.db
+*.db-shm
+*.db-wal
