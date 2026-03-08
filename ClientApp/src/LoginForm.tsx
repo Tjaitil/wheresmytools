@@ -1,6 +1,8 @@
 import { Form, Input, Button } from "@heroui/react";
 import { useState } from "react";
 import zod from "zod";
+import useLoggedInUserContext from "@/Context/LoggedInUserContext";
+import type { AppUser } from "@/types/AppUser";
 
 export interface LoginFormData {
   username: string;
@@ -10,13 +12,17 @@ export interface LoginFormData {
 const jwtResponseSchema = zod.object({
   accessToken: zod.string(),
   expiresAtUtc: zod.coerce.date(),
+  user: zod.object({
+    id: zod.string(),
+    username: zod.string(),
+    role: zod.string(),
+    createdAtUtc: zod.string(),
+  }),
 });
 
-export default function LoginForm({
-  onLoginSuccess,
-}: {
-  onLoginSuccess: (jwtToken: string) => void;
-}) {
+export default function LoginForm() {
+  const { login } = useLoggedInUserContext();
+
   const [formData, setFormData] = useState<LoginFormData>({
     username: "",
     password: "",
@@ -40,6 +46,7 @@ export default function LoginForm({
     ev: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     ev.preventDefault();
+    setGeneralError(null);
 
     validatePassword(formData.password);
 
@@ -52,28 +59,23 @@ export default function LoginForm({
         body: JSON.stringify(formData),
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        setErrors(errorData.errors || {});
-        setGeneralError(
-          errorData.message ||
-            "An unexpected error occurred. Please try again.",
-        );
+        setGeneralError("Invalid username or password.");
         return;
       }
 
       const data = await response.json();
-
-      console.log("Received response from server:", data);
       const parsedData = jwtResponseSchema.safeParse(data);
       if (!parsedData.success) {
         throw new Error("Invalid response from server");
       }
 
-      onLoginSuccess(parsedData.data.accessToken);
+      login({
+        accessToken: parsedData.data.accessToken,
+        user: parsedData.data.user as AppUser,
+      });
     } catch (error) {
       console.log(error);
       setGeneralError("An unexpected error occurred. Please try again.");
-      return;
     }
   };
 
