@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Api.Contracts;
 using Api.Data;
 using Api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,8 @@ public class AuthController(
         }
 
         var normalizedUsername = request.Username.Trim().ToUpperInvariant();
-        var user = await dbContext.Users.FirstOrDefaultAsync(candidate => candidate.NormalizedUsername == normalizedUsername);
+        var user = await dbContext.Users.FirstOrDefaultAsync(candidate =>
+            candidate.NormalizedUsername == normalizedUsername);
 
         if (user is null)
         {
@@ -45,7 +47,8 @@ public class AuthController(
         var audience = configuration["Jwt:Audience"];
         var signingKey = configuration["Jwt:SigningKey"];
 
-        if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience) || string.IsNullOrWhiteSpace(signingKey))
+        if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience) ||
+            string.IsNullOrWhiteSpace(signingKey))
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "JWT configuration is missing.");
         }
@@ -73,10 +76,11 @@ public class AuthController(
 
         var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(new TokenResponse(tokenString, expiresAt));
+        var userDto = AppUserDto.FromModel(user);
+        return Ok(new TokenResponse(tokenString, expiresAt, userDto));
     }
 }
 
 public sealed record TokenRequest(string Username, string Password);
 
-public sealed record TokenResponse(string AccessToken, DateTime ExpiresAtUtc);
+public sealed record TokenResponse(string AccessToken, DateTime ExpiresAtUtc, AppUserDto User);
