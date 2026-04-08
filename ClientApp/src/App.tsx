@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import LoginForm from "./LoginForm";
 import useLoggedInUserContext from "@/Context/LoggedInUserContext";
@@ -28,7 +28,7 @@ function App() {
         <p>
           Logged in as <strong>{user?.username}</strong>
         </p>
-        <Button color="danger" variant="flat" onPress={logout}>
+        <Button variant="danger-soft" onPress={logout}>
           Logout
         </Button>
       </div>

@@ -1,4 +1,11 @@
-import { Form, Input, Button } from "@heroui/react";
+import {
+  Form,
+  Input,
+  Button,
+  TextField,
+  Label,
+  FieldError,
+} from "@heroui/react";
 import { useState } from "react";
 import zod from "zod";
 import useLoggedInUserContext from "@/Context/LoggedInUserContext";
@@ -84,30 +91,29 @@ export default function LoginForm() {
       <h1 className="text-left text-xl w-full">Login</h1>
       <Form onSubmit={onSubmit} className="w-full">
         <div className="flex flex-col gap-4 w-full">
-          <Input
-            size="lg"
-            name="username"
-            type="text"
-            isRequired
-            label="Username"
-            value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
-            errorMessage={errors.username}
-          />
-          <Input
-            name="password"
-            type="password"
-            isRequired
-            label="Password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            errorMessage={errors.password}
-          />
-          <Button color="primary" type="submit">
+          <TextField isRequired isInvalid={!!errors.username}>
+            <Label>Username</Label>
+            <Input
+              type="text"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+            />
+            <FieldError>{errors.username}</FieldError>
+          </TextField>
+          <TextField isRequired isInvalid={!!errors.password}>
+            <Label>Password</Label>
+            <Input
+              type="password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+            <FieldError>{errors.password}</FieldError>
+          </TextField>
+          <Button variant="primary" type="submit">
             Login
           </Button>
         </div>
