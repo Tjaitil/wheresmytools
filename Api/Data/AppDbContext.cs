@@ -1,22 +1,23 @@
 using Api.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Data;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
-    public DbSet<AppUser> Users => Set<AppUser>();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AppUser>(entity =>
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ApplicationUser>(entity =>
         {
-            entity.HasKey(user => user.Id);
-            entity.Property(user => user.Username).HasMaxLength(100).IsRequired();
-            entity.Property(user => user.NormalizedUsername).HasMaxLength(100).IsRequired();
-            entity.Property(user => user.PasswordHash).IsRequired();
-            entity.Property(user => user.Role).HasMaxLength(50).IsRequired();
-            entity.HasIndex(user => user.NormalizedUsername).IsUnique();
+            entity.Property(user => user.CreatedAtUtc).IsRequired();
+            entity.Property(user => user.Email).IsRequired();
+            entity.Property(user => user.NormalizedEmail).IsRequired();
+            entity.Property(user => user.NormalizedUserName).IsRequired();
         });
     }
 }

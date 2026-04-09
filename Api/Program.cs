@@ -1,81 +1,48 @@
-using System.Text;
 using Api.Data;
 using Api.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var issuer = jwtSettings["Issuer"];
-
-var audience = jwtSettings["Audience"];
-var signingKey = jwtSettings["SigningKey"];
-
-if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience) || string.IsNullOrWhiteSpace(signingKey))
-{
-    throw new InvalidOperationException("JWT configuration is missing. Set Jwt:Issuer, Jwt:Audience, and Jwt:SigningKey.");
-}
-
-var signingKeyBytes = Encoding.UTF8.GetBytes(signingKey);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (string.IsNullOrWhiteSpace(connectionString))
-{
-    throw new InvalidOperationException("Database connection string is missing. Set ConnectionStrings:DefaultConnection.");
-}
-
-builder.Services.AddControllers();
+builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
-builder.Services.AddScoped<IPasswordHasher<AppUser>, PasswordHasher<AppUser>>();
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>();
+builder.Services.AddIdentityCore<ApplicationUser>(options => { options.User.RequireUniqueEmail = true; })
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("CookieAuth", new OpenApiSecurityScheme
     {
-        Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Enter a valid JWT bearer token."
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Cookie,
+        Name = ".AspNetCore.Cookies", // The name of your auth cookie
+        Description = "Use the login endpoint to set this cookie automatically."
     });
 
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "CookieAuth"
                 }
             },
-            []
+            new List<string>()
         }
     });
 });
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = issuer,
-            ValidateAudience = true,
-            ValidAudience = audience,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
-
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -91,9 +58,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
+app.MapGroup("/api").MapIdentityApi<ApplicationUser>();
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -101,12 +68,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
-app.MapFallbackToFile("/index.html");
-
+app.MapFallbackToFile("{*path:regex(^(?!api(?:/|$)).*)}", "/index.html");
 app.Run();
