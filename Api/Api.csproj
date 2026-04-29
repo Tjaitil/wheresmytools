@@ -1,25 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>60e7b3a2-6cbf-4971-88b0-7b898d2506bf</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>60e7b3a2-6cbf-4971-88b0-7b898d2506bf</UserSecretsId>
+        <SpaRoot>../ClientApp/</SpaRoot>
+        <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
+        <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="10.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Tests/**/*.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Tests/**/*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\cs\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\de\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\es\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\fr\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\it\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\ja\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\ko\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\pl\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\pt-BR\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\ru\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\tr\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\zh-Hans\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-net472\zh-Hant\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\cs\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\de\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\es\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\fr\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\it\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\ja\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\ko\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\pl\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\pt-BR\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\ru\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\tr\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\zh-Hans\" />
+        <Folder Include="bin\Debug\net10.0\BuildHost-netcore\zh-Hant\" />
+    </ItemGroup>
 
 </Project>

@@ -8,6 +8,6 @@ public sealed record AppUserDto(
     string Role,
     DateTime CreatedAtUtc)
 {
-    public static AppUserDto FromModel(AppUser user) =>
-        new(user.Id, user.Username, user.Role, user.CreatedAtUtc);
+    public static AppUserDto FromModel(ApplicationUser user) =>
+        new(user.Id, user.UserName ?? string.Empty, user.Role, user.CreatedAtUtc);
 }

@@ -15,7 +15,8 @@ public static class DbSeeder
     public static async Task seedAsync(IServiceProvider services, IConfiguration configuration)
     {
         var demoUsername = "test";
-        var demoPassword = "dev";
+        var demoEmail = "test@example.com";
+        var demoPassword = "Wertyd456!";
 
         if (string.IsNullOrWhiteSpace(demoUsername) || string.IsNullOrWhiteSpace(demoPassword))
         {
@@ -23,20 +24,23 @@ public static class DbSeeder
         }
 
         var dbContext = services.GetRequiredService<AppDbContext>();
-        var passwordHasher = services.GetRequiredService<IPasswordHasher<AppUser>>();
+        var passwordHasher = services.GetRequiredService<IPasswordHasher<ApplicationUser>>();
 
         var normalizedUsername = demoUsername.Trim().ToUpperInvariant();
-        var existingUser = await dbContext.Users.FirstOrDefaultAsync(user => user.NormalizedUsername == normalizedUsername);
+        var existingUser =
+            await dbContext.Users.FirstOrDefaultAsync(user => user.NormalizedUserName == normalizedUsername);
 
         if (existingUser is not null)
         {
             return;
         }
 
-        var user = new AppUser
+        var user = new ApplicationUser
         {
-            Username = demoUsername.Trim(),
-            NormalizedUsername = normalizedUsername,
+            UserName = demoUsername.Trim(),
+            NormalizedUserName = normalizedUsername,
+            Email = demoEmail,
+            NormalizedEmail = demoEmail.Trim().ToUpperInvariant(),
             PasswordHash = string.Empty,
             Role = "Admin"
         };

@@ -1,13 +1,15 @@
 import { createContext, useContext } from "react";
 import type { AppUser } from "@/types/AppUser";
-import type { AuthSession } from "@/types/AuthSession.ts";
+
+export type AuthStatus = "loading" | "authenticated" | "anonymous";
 
 export type LoggedInUserContextValue = {
-  jwtToken: string | null;
+  status: AuthStatus;
   user: AppUser | null;
-  isAuthenticated: boolean;
-  login: (session: AuthSession) => void;
-  logout: () => void;
+  clearUser: () => void;
+  refreshUser: () => Promise<AppUser | null>;
+  login: (user: AppUser) => void;
+  logout: () => Promise<void>;
 };
 
 export const LoggedInUserContext = createContext<
