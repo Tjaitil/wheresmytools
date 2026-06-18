@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "@heroui/styles";
+
+html {
+    background-color: var(--color-zinc-100);
+
+    --accent: oklch(0.58 0.14 195);
+    --accent-foreground: oklch(0.99 0 0);
+}
