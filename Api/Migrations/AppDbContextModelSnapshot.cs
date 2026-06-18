@@ -92,6 +92,165 @@ namespace Api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Api.Models.Tool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ToolboxId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ToolboxLocationId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ToolboxId");
+
+                    b.HasIndex("ToolboxLocationId");
+
+                    b.ToTable("Tools");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("FromLocationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ToLocationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ToolId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromLocationId");
+
+                    b.HasIndex("ToLocationId");
+
+                    b.HasIndex("ToolId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ToolRecords");
+                });
+
+            modelBuilder.Entity("Api.Models.Toolbox", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Toolboxes");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolboxLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ToolboxId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ToolboxId");
+
+                    b.ToTable("ToolboxLocations");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolboxMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ToolboxId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ToolboxId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ToolboxMembers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -218,6 +377,113 @@ namespace Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Api.Models.Tool", b =>
+                {
+                    b.HasOne("Api.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.Toolbox", "Toolbox")
+                        .WithMany("Tools")
+                        .HasForeignKey("ToolboxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.ToolboxLocation", "ToolboxLocation")
+                        .WithMany()
+                        .HasForeignKey("ToolboxLocationId");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Toolbox");
+
+                    b.Navigation("ToolboxLocation");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolRecord", b =>
+                {
+                    b.HasOne("Api.Models.ToolboxLocation", "FromLocation")
+                        .WithMany("RecordsFrom")
+                        .HasForeignKey("FromLocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Api.Models.ToolboxLocation", "ToLocation")
+                        .WithMany("RecordsTo")
+                        .HasForeignKey("ToLocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Api.Models.Tool", "Tool")
+                        .WithMany("Records")
+                        .HasForeignKey("ToolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromLocation");
+
+                    b.Navigation("ToLocation");
+
+                    b.Navigation("Tool");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Api.Models.Toolbox", b =>
+                {
+                    b.HasOne("Api.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolboxLocation", b =>
+                {
+                    b.HasOne("Api.Models.ApplicationUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.Toolbox", "Toolbox")
+                        .WithMany("ToolboxLocations")
+                        .HasForeignKey("ToolboxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Toolbox");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolboxMember", b =>
+                {
+                    b.HasOne("Api.Models.Toolbox", "Toolbox")
+                        .WithMany("ToolboxMembers")
+                        .HasForeignKey("ToolboxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Toolbox");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -267,6 +533,27 @@ namespace Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Api.Models.Tool", b =>
+                {
+                    b.Navigation("Records");
+                });
+
+            modelBuilder.Entity("Api.Models.Toolbox", b =>
+                {
+                    b.Navigation("ToolboxLocations");
+
+                    b.Navigation("ToolboxMembers");
+
+                    b.Navigation("Tools");
+                });
+
+            modelBuilder.Entity("Api.Models.ToolboxLocation", b =>
+                {
+                    b.Navigation("RecordsFrom");
+
+                    b.Navigation("RecordsTo");
                 });
 #pragma warning restore 612, 618
         }
